@@ -2,7 +2,7 @@ import numpy as np
 from re import split, sub, search
 from time import sleep
 
-from settings import (BASE_URL, DATA_DIR, logger, SLEEP_TIME, EXCEPTION,
+from settings import (BASE_URL, DATA_DIR, log, SLEEP_TIME, EXCEPTION,
                       ILLEGAL_CHAR, sess)
 from pandas import DataFrame
 from lxml.html import fromstring
@@ -15,7 +15,7 @@ def mysleep(ms: int = SLEEP_TIME) -> None:
     mu = ms
     sigma = ms / 4
     ms2 = abs(int(np.random.normal(mu, sigma)))
-    logger.info(f'休眠{ms2}s')
+    log.logger.info(f'休眠{ms2}s')
     sleep(int(ms2))
     #logger.info(f'休眠2s')
     #sleep(2)
@@ -29,7 +29,7 @@ chrome_options.add_argument('--disable-dev-shm-usage')
 '''
 
 def http_webdrive(url, *, timeout: int = 20, auto_reload: int = 1):
-    logger.info(f'访问 {url}')
+    log.logger.info(f'访问 {url}')
     browser = webdriver.Chrome(chrome_options=chrome_options, executable_path="/mnt/c/Users/yangguang/Downloads/chromedriver_win32/chromedriver.exe")
     #browser = webdriver.Chrome(chrome_options=chrome_options)
     browser.set_page_load_timeout(timeout)
@@ -68,7 +68,7 @@ def http(
     assert rept in ('text', 'bytes', 'json', 'obj')
     assert method in ('get', 'post', 'put', 'delete')
 
-    logger.info(f'{method} {url}')
+    log.logger.info(f'{method} {url}')
     try:
         r = getattr(sess, method)(url, headers=headers, params=params,timeout=timeout)
         if r.status_code == 200:
@@ -84,15 +84,15 @@ def http(
         # 该状态码表明网站有封闭ip的可能，无需重复请求了
         if r.status_code == 429:
             auto_reload = 0
-        logger.warn(f'请求失败状态码 {r.status_code}')
+        log.logger.warn(f'请求失败状态码 {r.status_code}')
     except EXCEPTION as e:
         #print(e)
         if auto_reload == 0:
-            logger.warn(f'错误无法通过重发请求解决')
+            log.logger.warn(f'错误无法通过重发请求解决')
         else:
-            logger.info(f'网络错误 尝试重发请求')
+            log.logger.info(f'网络错误 尝试重发请求')
     except Exception as e:
-        logger.error(f'未知错误 {e}')
+        log.logger.error(f'未知错误 {e}')
     if auto_reload == 0:
         return None
     auto_reload -= 1
@@ -120,14 +120,14 @@ class Scholar:
         
         nurl = None
         #if not node:
-        logger.info(f"======page======:::{max_page_num}")
+        log.logger.info(f"======page======:::{max_page_num}")
         if node and max_page_num > 0:
             #return None, []
             #当有下一页的时候才翻页，否则nurl为None
             nurl, max_page_num = self.get_next_url(node[-1], max_page_num)
         else:
             max_page_num = 0
-        logger.info(f"======page======:::{max_page_num}")
+        log.logger.info(f"======page======:::{max_page_num}")
         
         #nurl = self.get_next_url(node[-1])
 
@@ -235,7 +235,7 @@ class Scihub:
         try:
             tree = fromstring(html)
         except (ParserError, ValueError) as e:
-            logger.error(f'有可能被sci-hub或者资源网站封了IP {e}')
+            log.logger.error(f'有可能被sci-hub或者资源网站封了IP {e}')
             return None
 
         node = tree.xpath('.//iframe[@id="pdf"]')
@@ -273,12 +273,12 @@ class Mypath:
 
         fname = self.to_pdf_path(fname)
         if fname.exists():
-            logger.info(f'文件已存在 {fname.name}')
+            log.logger.info(f'文件已存在 {fname.name}')
             return True
 
         r = http(url, rept='obj')
         if r is None:
-            logger.info(f'下载失败 {url}')
+            log.logger.info(f'下载失败 {url}')
             return False
 
         try:
@@ -287,12 +287,12 @@ class Mypath:
                     fn.write(chunk)
             return True
         except Exception as e:
-            logger.error(f'写入错误 {e}')
+            log.logger.error(f'写入错误 {e}')
             return False
 
     def save_result(self, key: str, data: dict) -> None:
         if not data:
-            logger.warning(f'关键词{key} 没有搜索结果')
+            log.logger.warning(f'关键词{key} 没有搜索结果')
             return
         key = "_".join(key.split(' '))
         fname = sub(ILLEGAL_CHAR, '', key)
@@ -304,7 +304,7 @@ class Mypath:
         with open(fname,'w') as fn:
             json.dump(data, fn)
         return str(fname)
-        logger.info(f'saved to {fname.name}')
+        log.logger.info(f'saved to {fname.name}')
 
     def to_pdf_path(self, fname: str):
         fname = "_".join(fname.split(' '))

@@ -1,7 +1,7 @@
 # coding: utf8
 from time import time
 from utils import mysleep, http, Scholar, Mypath, Scihub, http_webdrive
-from settings import BASE_DIR, logger, args, ILLEGAL_CHAR
+from settings import BASE_DIR, log, args, ILLEGAL_CHAR
 from db import get_db
 import json
 from re import sub
@@ -35,8 +35,8 @@ class Handler(Scholar):
                 """ 获取当前关键词的所有数据 """
                 #html = http_webdrive(url)
                 html = http(url)
-                #logger.info(f'搜索结果:{html}')
-                logger.info(f"===++===page===++===:::{max_page}")
+                #log.logger.info(f'搜索结果:{html}')
+                log.logger.info(f"===++===page===++===:::{max_page}")
                 url, max_page, records = self.get(html, max_page)
                 for r in records:
                     r['title'] = sub(ILLEGAL_CHAR, '', r['title'])
@@ -108,7 +108,7 @@ def main():
 
 
 if __name__ == "__main__":
-    logger.info('任务开始')
+    log.logger.info('任务开始')
     start_at = time()
     print(main())
-    logger.info(f'任务结束，耗时{time() - start_at}s')
+    log.logger.info(f'任务结束，耗时{time() - start_at}s')
