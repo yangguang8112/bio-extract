@@ -72,7 +72,7 @@ class Handler(Scholar):
                     db.execute(
                         'INSERT INTO paper (title, downloaded, paper_url, key_words, pdf_path, author, quote, pubtime, ner_res)'
                         ' VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)',
-                        (r['title'], str(r['downloaded']), r['url'],r['keyword'],r['file_path'],r['author'],r['qoute'],r['pubtime'],None)
+                        (r['title'], str(r['downloaded']), r['url'],r['keyword'],r['file_path'],r['author'],r['qoute'],r['pubtime'],'None')
                         )
                     db.commit()
                     mysleep()
@@ -110,5 +110,6 @@ def main():
 if __name__ == "__main__":
     log.logger.info('任务开始')
     start_at = time()
-    print(main())
+    #print(main())
+    main()
     log.logger.info(f'任务结束，耗时{time() - start_at}s')

@@ -296,9 +296,9 @@ class Mypath:
             return
         key = "_".join(key.split(' '))
         fname = sub(ILLEGAL_CHAR, '', key)
-        #fname = DATA_DIR / f'{fname}.xlsx'
+        xlsx_fname = DATA_DIR / f'{fname}.xlsx'
         df = DataFrame.from_records(data)
-        df.to_excel(fname, index=None)
+        df.to_excel(xlsx_fname, index=None)
         #改成json格式方便后面直接放到数据库
         fname = DATA_DIR / f'{fname}.json'
         with open(fname,'w') as fn:
