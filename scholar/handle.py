@@ -78,24 +78,22 @@ class Handler(Scholar):
                     mysleep()
 
                 data += records
-                #mysleep()
+                mysleep()
                 """ 当前关键词查询结束，换下一下 """
                 if not url or max_page == 0:
                     break
-                #mysleep()
-            if len(data) == 0:
-                return
-            
-            res = mypath.save_result(key, data)
-            return res
+                mysleep()
+            if len(data) != 0:
+                res = mypath.save_result(key, data)
+            #return res
 
     def get_search_keys(self):
         """ 读取关键词 """
         if args.keys:
-            #with open(args.keys, 'r', encoding='utf8') as fn:
-            #    return fn.read().split('\n')
+            with open(args.keys, 'r', encoding='utf8') as fn:
+                return fn.read().split('\n')
             # 修改成直接传字符串
-            return args.keys.split(',')
+            #return args.keys.split(',')
         else:
             with open(BASE_DIR / 'keys.txt', 'r', encoding='utf8') as fn:
                 return fn.read().split('\n')
