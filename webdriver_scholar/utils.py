@@ -100,7 +100,7 @@ def http(
     log.logger.info(f'{method} {url}')
     try:
         #r = getattr(sess, method)(url, headers=headers, params=params,timeout=timeout)
-        r = getattr(sess, method)(url, headers=headers, params=params,timeout=(15,10))
+        r = getattr(sess, method)(url, headers=headers, params=params,timeout=(21,18))
         if r.status_code == 200:
             if rept == 'obj':
                 return r
@@ -166,7 +166,8 @@ class Scholar4Webdriver:
             mysleep(5)
             next_button.click()
         else:
-            max_page_num = 0
+            puase = input("没有找到下一页，请检查页面，如果没有问题按任意键继续:")
+            #max_page_num = 0
         log.logger.info(f"======page======:::{max_page_num}")
         
         #nurl = self.get_next_url(node[-1])
