@@ -36,7 +36,7 @@ def renji_check(html):
     return 0
 
 def http_webdrive(url, *, timeout: int = 20, auto_reload: int = 1):
-    print("zheli")
+    #print("zheli")
     log.logger.info(f'访问 {url}')
     sleep(5)
     browser = webdriver.Chrome(chrome_options=chrome_options, executable_path=chrome_config['webdriver_path'])
@@ -100,7 +100,7 @@ def http(
     log.logger.info(f'{method} {url}')
     try:
         #r = getattr(sess, method)(url, headers=headers, params=params,timeout=timeout)
-        r = getattr(sess, method)(url, headers=headers, params=params,timeout=(21,18))
+        r = getattr(sess, method)(url, headers=headers, params=params,timeout=(18,15))
         if r.status_code == 200:
             if rept == 'obj':
                 return r
@@ -166,7 +166,11 @@ class Scholar4Webdriver:
             mysleep(5)
             next_button.click()
         else:
-            puase = input("没有找到下一页，请检查页面，如果没有问题按任意键继续:")
+            #puase = input("没有找到下一页，请检查页面，如果没有问题按任意键继续:")
+            try:
+                next_button = browser.find_element_by_link_text('下一页')
+            except:
+                log.logger.info("======没有达到最大页输出，请核查是否确实搜索结果不足最大页数======")
             #max_page_num = 0
         log.logger.info(f"======page======:::{max_page_num}")
         

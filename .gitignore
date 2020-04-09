@@ -5,3 +5,4 @@ all.log
 run*.sh
 nohup.out
 data
+local_config.ini
