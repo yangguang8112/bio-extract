@@ -4,3 +4,4 @@ instance/pdf/
 all.log
 run*.sh
 nohup.out
+data

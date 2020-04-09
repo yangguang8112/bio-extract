@@ -40,7 +40,7 @@ def http_webdrive(url, *, timeout: int = 20, auto_reload: int = 1):
     sleep(5)
     browser = webdriver.Chrome(chrome_options=chrome_options, executable_path="/mnt/c/Users/sunsh/Desktop/scho/chromedriver_win32/chromedriver.exe")
     #browser = webdriver.Chrome(chrome_options=chrome_options)
-    browser.set_page_load_timeout(100000)
+    browser.set_page_load_timeout(1000000)
     try:
         browser.get(url)
         # 需要等浏览器反应一下，不然会返回奇怪的page_source不过和服务器访问的时候返回的一样
@@ -138,6 +138,7 @@ class Scholar4Webdriver:
     def get(self, browser, max_page_num) -> tuple:
         html = browser.page_source
         if not html:
+            puase = input("页面没有内容，请检查页面，如果没有问题按任意键继续:")
             return '', 0, []
         tree = fromstring(html)
         divs = tree.xpath('//div[@id="gs_res_ccl_mid"]/div')
@@ -150,11 +151,13 @@ class Scholar4Webdriver:
             next_button = None
 
         if not divs:
+            puase = input("页面没有内容，请检查页面，如果没有问题按任意键继续:")
             return None, 0, []
         
         nurl = None
         #if not node:
         log.logger.info(f"======page======:::{max_page_num}")
+        log.logger.info(f"当前访问的页面链接为:::{browser.current_url}")
         if next_button and max_page_num > 0:
             #return None, []
             #当有下一页的时候才翻页，否则nurl为None
