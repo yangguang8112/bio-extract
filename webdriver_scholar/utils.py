@@ -9,6 +9,7 @@ from lxml.html import fromstring
 from lxml.etree import ParserError
 
 import json
+from config import chrome_config
 
 
 def mysleep(ms: int = SLEEP_TIME) -> None:
@@ -26,7 +27,7 @@ chrome_options = Options()
 #chrome_options.add_argument('--headless')
 chrome_options.add_argument('--no-sandbox')
 chrome_options.add_argument('--disable-dev-shm-usage')
-chrome_options.add_argument("--user-data-dir="+r"C:\Users\sunsh\Desktop\scho\Chrome\Chrome\User Data")
+chrome_options.add_argument("--user-data-dir="+chrome_config['web_user_data'])
 
 def renji_check(html):
     if '请进行人机身份验证' in html or '我们的系统检测到您的计算机网络中存在异常流量' in html:
@@ -38,7 +39,7 @@ def http_webdrive(url, *, timeout: int = 20, auto_reload: int = 1):
     print("zheli")
     log.logger.info(f'访问 {url}')
     sleep(5)
-    browser = webdriver.Chrome(chrome_options=chrome_options, executable_path="/mnt/c/Users/sunsh/Desktop/scho/chromedriver_win32/chromedriver.exe")
+    browser = webdriver.Chrome(chrome_options=chrome_options, executable_path=chrome_config['webdriver_path'])
     #browser = webdriver.Chrome(chrome_options=chrome_options)
     browser.set_page_load_timeout(1000000)
     try:
