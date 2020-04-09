@@ -51,6 +51,7 @@ class Handler(Scholar4Webdriver):
                         (r['title'], cur_url)
                     ).fetchall()
                     if check:
+                        log.logger.info(f"{r['title']}======此文献信息已存在数据库中")
                         r['downloaded'] = 'repeat'
                         r['url'] = cur_url
                         r['file_path'] = 'repeat'
