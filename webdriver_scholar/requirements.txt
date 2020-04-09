@@ -1,0 +1,8 @@
+lxml
+http3
+pprint
+whenpy
+pandas
+fake-useragent
+openpyxl
+requests
