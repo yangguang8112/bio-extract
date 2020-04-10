@@ -1,13 +1,13 @@
 # coding: utf8
 from time import time
-from utils import mysleep, http, Scholar, Mypath, Scihub, http_webdrive, renji_check, Scholar4Webdriver
+from utils import mysleep, http, Scholar, Mypath, Scihub, http_webdrive, webdrive_init, renji_check, Scholar4Webdriver
 from settings import BASE_DIR, log, args, ILLEGAL_CHAR
 from db import get_db
 import json
 from re import sub
 from time import sleep
 from multiprocessing import Pool
-from config import scihub_config
+from config import scihub_config, mode_config
 
 class Handler(Scholar4Webdriver):
     def __init__(self):
@@ -62,17 +62,19 @@ class Handler(Scholar4Webdriver):
 
     def run(self):
         max_page = self.max_page
+        browser = webdrive_init()
         for key in self.keys:
             #key = sub(ILLEGAL_CHAR, '', key)
             #keyword = "_".join(key.split())
             data = []
             #print(f'\n关键词：{key}')
             """ 读取关键词 """
+            key = key.strip()
             url = self.get_first_url(key)
             #print(url)
             mypath = Mypath(key)
             #
-            browser = http_webdrive(url)
+            http_webdrive(url, browser)
             page_flag = True
             while True:
                 """ 获取当前关键词的所有数据 """
@@ -84,7 +86,7 @@ class Handler(Scholar4Webdriver):
                 log.logger.info(f"===++===page===++===:::{max_page}")
                 page_flag, max_page, records = self.get(browser, max_page)
                 # downloading PDF
-                if scihub_config['multiprocessing']:
+                if scihub_config['multiprocessing'] and records:
                     p = Pool(len(records))
                     for r in records:
                         p.apply_async(self.download_paper, args=(r, mypath, key))
@@ -92,7 +94,8 @@ class Handler(Scholar4Webdriver):
                     p.join()
                 else:
                     print("没有在并行下载")
-                    self.download_paper(r, mypath, key)
+                    for r in records:
+                        self.download_paper(r, mypath, key)
 
                 data += records
                 #mysleep()
@@ -100,23 +103,23 @@ class Handler(Scholar4Webdriver):
                 if not page_flag or max_page == 0:
                     break
                 #mysleep()
-            browser.quit()
-            if len(data) == 0:
-                return
-            
-            res = mypath.save_result(key, data)
-            return res
+            #browser.quit()
+            if len(data) != 0:
+                res = mypath.save_result(key, data)
+        browser.quit()
+        return
 
     def get_search_keys(self):
         """ 读取关键词 """
         if args.keys:
-            #with open(args.keys, 'r', encoding='utf8') as fn:
-            #    return fn.read().split('\n')
+            if mode_config['keywordfile']:
+                with open(args.keys, 'r') as fn:
+                    return fn.read().split('\n')
             # 修改成直接传字符串
-            return args.keys.split(',')
+            else:
+                return args.keys.split(',')
         else:
-            with open(BASE_DIR / 'keys.txt', 'r', encoding='utf8') as fn:
-                return fn.read().split('\n')
+            print("no key words")
 
 
 

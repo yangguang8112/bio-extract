@@ -8,4 +8,6 @@ chrome_config = config['Chrome']
 
 scihub_config = config['Scihub']
 
+mode_config = config['Mode']
+
 #print(dict(chrome_config))

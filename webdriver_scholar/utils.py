@@ -35,13 +35,17 @@ def renji_check(html):
         return 1
     return 0
 
-def http_webdrive(url, *, timeout: int = 20, auto_reload: int = 1):
+def webdrive_init():
+    browser = webdriver.Chrome(chrome_options=chrome_options, executable_path=chrome_config['webdriver_path'])
+    browser.set_page_load_timeout(1000000)
+    return browser
+
+def http_webdrive(url, browser, *, timeout: int = 20, auto_reload: int = 1):
     #print("zheli")
     log.logger.info(f'访问 {url}')
     sleep(5)
-    browser = webdriver.Chrome(chrome_options=chrome_options, executable_path=chrome_config['webdriver_path'])
+    #browser = webdriver.Chrome(chrome_options=chrome_options, executable_path=chrome_config['webdriver_path'])
     #browser = webdriver.Chrome(chrome_options=chrome_options)
-    browser.set_page_load_timeout(1000000)
     try:
         browser.get(url)
         # 需要等浏览器反应一下，不然会返回奇怪的page_source不过和服务器访问的时候返回的一样
@@ -58,14 +62,14 @@ def http_webdrive(url, *, timeout: int = 20, auto_reload: int = 1):
                 print("进了二次验证")
                 browser.quit()
                 sleep(5)
-                return http_webdrive(url,timeout=timeout,auto_reload=auto_reload)
+                return http_webdrive(url,browser,timeout=timeout,auto_reload=auto_reload)
             else:
                 #browser.quit()
                 return browser
         if not html:
             browser.quit()
             print("页面什么都没有，快去查看原因")
-            return http_webdrive(url,timeout=timeout,auto_reload=auto_reload)
+            return http_webdrive(url,browser,timeout=timeout,auto_reload=auto_reload)
         #browser.quit()
         return browser
     except EXCEPTION as e:
@@ -78,7 +82,7 @@ def http_webdrive(url, *, timeout: int = 20, auto_reload: int = 1):
         return
     browser.quit()
     mysleep(timeout)
-    return http_webdrive(url,timeout=timeout,auto_reload=auto_reload)
+    return http_webdrive(url,browser,timeout=timeout,auto_reload=auto_reload)
 
 def http(
         url,
@@ -152,7 +156,8 @@ class Scholar4Webdriver:
             next_button = None
 
         if not divs:
-            puase = input("页面没有内容，请检查页面，如果没有问题按任意键继续:")
+            # 这里应该是搜索结果为0
+            #puase = input("页面没有内容，请检查页面，如果没有问题按任意键继续:")
             return None, 0, []
         
         nurl = None
