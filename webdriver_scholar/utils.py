@@ -43,7 +43,7 @@ def webdrive_init():
 def http_webdrive(url, browser, *, timeout: int = 20, auto_reload: int = 1):
     #print("zheli")
     log.logger.info(f'访问 {url}')
-    sleep(5)
+    mysleep(5)
     #browser = webdriver.Chrome(chrome_options=chrome_options, executable_path=chrome_config['webdriver_path'])
     #browser = webdriver.Chrome(chrome_options=chrome_options)
     try:
@@ -143,8 +143,13 @@ class Scholar4Webdriver:
     def get(self, browser, max_page_num) -> tuple:
         html = browser.page_source
         if not html:
-            puase = input("页面没有内容，请检查页面，如果没有问题按任意键继续:")
-            return '', 0, []
+            #puase = input("页面没有内容，请检查页面，如果没有问题请输入1，则程序会结束，否则请刷新浏览器后输入0:")
+            #if int(pause) == 1
+            #return '', 0, []
+            # 直接自动刷新页面
+            log.logger.info(f"页面无内容，刷新页面，链接为:::{browser.current_url}")
+            browser.refresh()
+            return self.get(browser, max_page_num)
         tree = fromstring(html)
         divs = tree.xpath('//div[@id="gs_res_ccl_mid"]/div')
         #node = tree.xpath('//div[@id="gs_n"]//td')

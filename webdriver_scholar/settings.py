@@ -14,6 +14,7 @@ from http3.exceptions import PoolTimeout, ReadTimeout as hReadTimeout
 from h2.exceptions import StreamClosedError, ProtocolError
 from h11._util import RemoteProtocolError
 from argparse import ArgumentParser
+import os
 
 ###更新2020/03/04
 #basicConfig(level=INFO, format='[%(asctime)s] %(levelname)s: %(message)s')
@@ -65,13 +66,15 @@ args = parser.parse_args()
 
 # 当前文件的父级目录
 BASE_DIR = Path(__file__).parent.absolute()
+WORK_DIR = os.getcwd()
 
 if args.datadir:
-    DATA_DIR = Path(args.datadir).absolute() / 'data'
+    DATA_DIR = Path(args.datadir)
 else:
-    DATA_DIR = BASE_DIR / 'data'
+    DATA_DIR = Path(os.path.join(WORK_DIR, 'data'))
 # 如果数据文件不存在，则创建
 DATA_DIR.mkdir(parents=True, exist_ok=True)
+
 
 # 设置谷歌学术搜索链接
 if args.mirror:

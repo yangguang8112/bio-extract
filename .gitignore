@@ -1,6 +1,5 @@
 __pycache__/
-instance/paper.sqlite
-instance/pdf/
+instance/
 all.log
 run*.sh
 nohup.out
