@@ -41,7 +41,6 @@ class Handler(Scholar4Webdriver):
             r['downloaded'] = mypath.save(cur_url, r['title'])
         # 通过sci-hub获取下载地址
         # 这一步的情况包括：直接下载pdf失败的、目标地址不是pdf的
-        print("测试33333333")
         if r['downloaded'] is False and (self.sci is not None or args.scihub):
             if args.scihub:
                 sci_url = args.scihub
@@ -63,9 +62,9 @@ class Handler(Scholar4Webdriver):
         #mysleep()
 
     def run(self):
-        max_page = self.max_page
         browser = webdrive_init()
         for key in self.keys:
+            max_page = self.max_page
             #key = sub(ILLEGAL_CHAR, '', key)
             #keyword = "_".join(key.split())
             data = []
@@ -90,7 +89,6 @@ class Handler(Scholar4Webdriver):
                 #print(records)
                 # downloading PDF
                 if scihub_config['multiprocessing'] and records:
-                    print("到这里了吗")
                     p = Pool(len(records))
                     for r in records:
                         p.apply_async(self.download_paper, args=(r, mypath, key))
@@ -101,7 +99,6 @@ class Handler(Scholar4Webdriver):
                     for r in records:
                         self.download_paper(r, mypath, key)
                 
-                print("跳过了吗")
                 data += records
                 #mysleep()
                 """ 当前关键词查询结束，换下一下 """

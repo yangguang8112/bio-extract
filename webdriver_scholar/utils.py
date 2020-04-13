@@ -9,7 +9,7 @@ from lxml.html import fromstring
 from lxml.etree import ParserError
 
 import json
-from config import chrome_config
+from config import chrome_config, scihub_config
 
 
 def mysleep(ms: int = SLEEP_TIME) -> None:
@@ -43,7 +43,7 @@ def webdrive_init():
 def http_webdrive(url, browser, *, timeout: int = 20, auto_reload: int = 1):
     #print("zheli")
     log.logger.info(f'访问 {url}')
-    mysleep(5)
+    mysleep(3)
     #browser = webdriver.Chrome(chrome_options=chrome_options, executable_path=chrome_config['webdriver_path'])
     #browser = webdriver.Chrome(chrome_options=chrome_options)
     try:
@@ -429,7 +429,7 @@ class Scihub:
         if len(urls) == 0:
             raise RuntimeError('没有可用的sci-hub地址')
         '''
-        urls = ['https://sci-hub.si/','https://sci-hub.tw/']
+        urls = scihub_config['url_list'].split(',')
         return urls
 
 
