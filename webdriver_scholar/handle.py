@@ -20,7 +20,6 @@ class Handler(Scholar4Webdriver):
             self.sci = None
     
     def download_paper(self, r, mypath, key):
-        # 连接数据库
         db = get_db()
         r['title'] = sub(ILLEGAL_CHAR, '', r['title'])
         pdf, cur_url = r['url']
@@ -51,18 +50,25 @@ class Handler(Scholar4Webdriver):
         r['keyword'] = key
         r['url'] = cur_url
         r['file_path'] = str(mypath.to_pdf_path(r['title']))
-        #
-        db.execute(
+        # 返回结果，最后再统一操作数据库，避免插入的时候id冲突
+        return r
+    
+    def insert_db(self, data_list):
+        db = get_db()
+        for r in data_list:
+            db.execute(
             'INSERT INTO paper (title, downloaded, paper_url, key_words, pdf_path, author, quote, pubtime, ner_res)'
             ' VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)',
             (r['title'], str(r['downloaded']), r['url'],r['keyword'],r['file_path'],r['author'],r['qoute'],r['pubtime'],'None')
             )
-        db.commit()
-        db.close()
-        #mysleep()
+            db.commit()
+        #db.close()
+
 
     def run(self):
         browser = webdrive_init()
+        if self.keys[-1] == '':
+            self.keys.pop()
         for key in self.keys:
             max_page = self.max_page
             #key = sub(ILLEGAL_CHAR, '', key)
@@ -88,16 +94,26 @@ class Handler(Scholar4Webdriver):
                 page_flag, max_page, records = self.get(browser, max_page)
                 #print(records)
                 # downloading PDF
-                if scihub_config['multiprocessing'] and records:
+                if scihub_config['multiprocessing'] and len(records) > 1:
                     p = Pool(len(records))
+                    result = []
                     for r in records:
-                        p.apply_async(self.download_paper, args=(r, mypath, key))
+                        result.append(p.apply_async(self.download_paper, args=(r, mypath, key)))
                     p.close()
                     p.join()
-                else:
+                    # 将结果插入数据库
+                    data_list = []
+                    for i in result:
+                        if i.get():
+                            data_list.append(i.get())
+                    if data_list:
+                        self.insert_db(data_list)
+                elif records:
                     print("没有在并行下载")
                     for r in records:
-                        self.download_paper(r, mypath, key)
+                        result = self.download_paper(r, mypath, key)
+                    if result:
+                        self.insert_db([result])
                 
                 data += records
                 #mysleep()
