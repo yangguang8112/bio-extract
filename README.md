@@ -1,4 +1,5 @@
-# bio-extract
+# bio-extract  文献爬取器
+本工具原理是本地安装谷歌浏览器后使用selenium控制浏览器访问谷歌学术，获取文献下载链接后自动下载
 推荐环境 windows10 + 子系统（WSL Ubuntu 18.04）
 子系统在win10的应用商店可以直接安装
 #### 使用步骤
@@ -23,13 +24,16 @@ web_user_data = C:\Users\yangguang\Desktop\temp\Chrome\User Data
 退出脚本目录，另外新建一个工作目录（workdir）
 ```shell
 cd <workdir>
+# 初始化数据库，在新的工作目录一定要做，且只做一次
 python <script_dir>/db.py init
+# 开始运行爬虫脚本
 python <script_dir>/webdriver_scholar/handle.py --keys <keywords_file> --maxpage 20
 ```
 其中<script_dir>为第一步中的脚本目录
 可以从 http://60.205.203.207:8081/instance/ 下载已有paper.sqlit 放到workdir这样可以排除数据库中已有文献
 
 ###### 注意事项
-1.开始运行后会弹出谷歌浏览器，只有当谷歌学术搜索出现人机验证的时候需要去完成验证以外其他时候都不需要手动操作；
-2.我的开发环境是Windows10+WSL(Ubuntu 18.04)，没有测试过完全在Windows10环境下，欢迎debug；
-3.
+1.弹出谷歌浏览器如果不是最大化需要手动点选最大化；
+2.开始运行后会弹出谷歌浏览器，只有当谷歌学术搜索出现人机验证的时候需要去完成验证以外其他时候都不需要手动操作；
+3.我的开发环境是Windows10+WSL(Ubuntu 18.04)，没有测试过完全在Windows10环境下，欢迎debug；
+4.
