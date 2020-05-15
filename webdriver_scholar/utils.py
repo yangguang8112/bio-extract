@@ -40,6 +40,52 @@ def webdrive_init():
     browser.set_page_load_timeout(1000000)
     return browser
 
+def index_page(url, browser, *, timeout: int = 20, auto_reload: int = 1):
+    log.logger.info(f'访问 {url}')
+    mysleep(3)
+    try:
+        browser.get(url)
+        sleep(5)
+        html = browser.page_source
+        if '请进行人机身份验证' in html or '我们的系统检测到您的计算机网络中存在异常流量' in html:
+            puase = input("请进行人机验证，验证后按任意键继续:")
+            html_check = browser.page_source
+            if '请进行人机身份验证' in html_check or not html_check or '我们的系统检测到您的计算机网络中存在异常流量' in html:
+                print("进了二次验证")
+                browser.quit()
+                sleep(5)
+                return index_page(url,browser,timeout=timeout,auto_reload=auto_reload)
+            else:
+                return browser
+        if not html:
+            browser.quit()
+            puase = input("页面什么都没有，查看原因后按任意键继续:")
+            return index_page(url,browser,timeout=timeout,auto_reload=auto_reload)
+        return browser
+    except EXCEPTION as e:
+        #暂时先不用重新请求
+        print("请求出错")
+        print(e)
+        auto_reload = 0
+    if auto_reload == 0:
+        browser.quit()
+        return
+    browser.quit()
+    mysleep(timeout)
+    return index_page(url,browser,timeout=timeout,auto_reload=auto_reload)
+
+def search_key(browser, key_word):
+    log.logger.info(f'正在查询关键词 {key_word}')
+    search_field = browser.find_element_by_name('q')
+    search_field.clear()
+    search_field.send_keys(key_word)
+    sleep(3)
+    search_field.submit()
+    html = browser.page_source
+    while renji_check(html):
+        html = browser.page_source
+    return browser
+
 def http_webdrive(url, browser, *, timeout: int = 20, auto_reload: int = 1):
     #print("zheli")
     log.logger.info(f'访问 {url}')

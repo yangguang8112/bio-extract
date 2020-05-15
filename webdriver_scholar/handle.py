@@ -1,6 +1,7 @@
 # coding: utf8
 from time import time
-from utils import mysleep, http, Scholar, Mypath, Scihub, http_webdrive, webdrive_init, renji_check, Scholar4Webdriver
+#from utils import mysleep, http, Scholar, Mypath, Scihub, http_webdrive, webdrive_init, renji_check, Scholar4Webdriver
+from utils import *
 from settings import BASE_DIR, log, args, ILLEGAL_CHAR
 from db import get_db
 import json
@@ -67,6 +68,7 @@ class Handler(Scholar4Webdriver):
 
     def run(self):
         browser = webdrive_init()
+        index_page('https://scholar.google.com.hk/', browser)
         if self.keys[-1] == '':
             self.keys.pop()
         for key in self.keys:
@@ -81,7 +83,8 @@ class Handler(Scholar4Webdriver):
             #print(url)
             mypath = Mypath(key)
             #
-            http_webdrive(url, browser)
+            #http_webdrive(url, browser)
+            search_key(browser, key)
             page_flag = True
             while True:
                 """ 获取当前关键词的所有数据 """
